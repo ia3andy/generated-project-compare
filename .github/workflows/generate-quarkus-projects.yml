@@ -1,0 +1,90 @@
+name: Generate Quarkus Projects
+
+on:
+  workflow_dispatch:
+    inputs:
+      quarkus_version:
+        description: 'Quarkus version (leave empty for latest)'
+        required: false
+        type: string
+
+jobs:
+  generate-projects:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: '17'
+
+      - name: Install JBang
+        run: |
+          curl -Ls https://sh.jbang.dev | bash -s - app setup
+          echo "$HOME/.jbang/bin" >> $GITHUB_PATH
+
+      - name: Install Quarkus CLI
+        run: |
+          if [ -n "${{ inputs.quarkus_version }}" ]; then
+            echo "Installing Quarkus CLI version ${{ inputs.quarkus_version }}"
+            jbang app install --fresh --force --name quarkus "https://repo1.maven.org/maven2/io/quarkus/quarkus-cli/${{ inputs.quarkus_version }}/quarkus-cli-${{ inputs.quarkus_version }}-runner.jar"
+          else
+            echo "Installing latest Quarkus CLI"
+            jbang app install --fresh --force quarkus@quarkusio
+          fi
+
+      - name: Get Quarkus version
+        id: quarkus_version
+        run: |
+          VERSION=$(quarkus version | grep -oP 'Quarkus CLI \K[0-9.]+' || echo "unknown")
+          echo "version=$VERSION" >> $GITHUB_OUTPUT
+          echo "Detected Quarkus CLI version: $VERSION"
+
+      - name: Clean existing projects
+        run: |
+          rm -rf project-maven project-gradle project-gradle-kotlin-dsl
+
+      - name: Create Maven project
+        run: |
+          if [ -n "${{ inputs.quarkus_version }}" ]; then
+            quarkus create app com.example:project-maven:1.0.0-SNAPSHOT --maven -P io.quarkus.platform:quarkus-bom:${{ inputs.quarkus_version }}
+          else
+            quarkus create app com.example:project-maven:1.0.0-SNAPSHOT --maven
+          fi
+
+      - name: Create Gradle project
+        run: |
+          if [ -n "${{ inputs.quarkus_version }}" ]; then
+            quarkus create app com.example:project-gradle:1.0.0-SNAPSHOT --gradle -P io.quarkus.platform:quarkus-bom:${{ inputs.quarkus_version }}
+          else
+            quarkus create app com.example:project-gradle:1.0.0-SNAPSHOT --gradle
+          fi
+
+      - name: Create Gradle Kotlin DSL project
+        run: |
+          if [ -n "${{ inputs.quarkus_version }}" ]; then
+            quarkus create app com.example:project-gradle-kotlin-dsl:1.0.0-SNAPSHOT --gradle-kotlin-dsl -P io.quarkus.platform:quarkus-bom:${{ inputs.quarkus_version }}
+          else
+            quarkus create app com.example:project-gradle-kotlin-dsl:1.0.0-SNAPSHOT --gradle-kotlin-dsl
+          fi
+
+      - name: Configure Git
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+
+      - name: Commit and push changes
+        run: |
+          git add .
+          if git diff --staged --quiet; then
+            echo "No changes to commit"
+          else
+            COMMIT_MSG="Generate Quarkus projects with version ${{ steps.quarkus_version.outputs.version }}"
+            git commit -m "$COMMIT_MSG"
+            git push
+            echo "Changes committed and pushed: $COMMIT_MSG"
+          fi
