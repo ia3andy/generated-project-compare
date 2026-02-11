@@ -29,6 +29,7 @@ jobs:
 
       - name: Install Quarkus CLI
         run: |
+          jbang trust add https://repo1.maven.org/maven2/io/quarkus/quarkus-cli/
           if [ -n "${{ inputs.quarkus_version }}" ]; then
             echo "Installing Quarkus CLI version ${{ inputs.quarkus_version }}"
             jbang app install --fresh --force --name quarkus "https://repo1.maven.org/maven2/io/quarkus/quarkus-cli/${{ inputs.quarkus_version }}/quarkus-cli-${{ inputs.quarkus_version }}-runner.jar"
@@ -40,13 +41,14 @@ jobs:
       - name: Get Quarkus version
         id: quarkus_version
         run: |
-          VERSION=$(quarkus version | grep -oP 'Quarkus CLI \K[0-9.]+' || echo "unknown")
+          VERSION=$(quarkus version)
           echo "version=$VERSION" >> $GITHUB_OUTPUT
           echo "Detected Quarkus CLI version: $VERSION"
 
       - name: Clean existing projects
         run: |
-          rm -rf project-maven project-gradle project-gradle-kotlin-dsl
+          rm -rf project-maven
+          # rm -rf project-gradle project-gradle-kotlin-dsl
 
       - name: Create Maven project
         run: |
@@ -56,21 +58,21 @@ jobs:
             quarkus create app com.example:project-maven:1.0.0-SNAPSHOT --maven
           fi
 
-      - name: Create Gradle project
-        run: |
-          if [ -n "${{ inputs.quarkus_version }}" ]; then
-            quarkus create app com.example:project-gradle:1.0.0-SNAPSHOT --gradle -P io.quarkus.platform:quarkus-bom:${{ inputs.quarkus_version }}
-          else
-            quarkus create app com.example:project-gradle:1.0.0-SNAPSHOT --gradle
-          fi
+      # - name: Create Gradle project
+      #   run: |
+      #     if [ -n "${{ inputs.quarkus_version }}" ]; then
+      #       quarkus create app com.example:project-gradle:1.0.0-SNAPSHOT --gradle -P io.quarkus.platform:quarkus-bom:${{ inputs.quarkus_version }}
+      #     else
+      #       quarkus create app com.example:project-gradle:1.0.0-SNAPSHOT --gradle
+      #     fi
 
-      - name: Create Gradle Kotlin DSL project
-        run: |
-          if [ -n "${{ inputs.quarkus_version }}" ]; then
-            quarkus create app com.example:project-gradle-kotlin-dsl:1.0.0-SNAPSHOT --gradle-kotlin-dsl -P io.quarkus.platform:quarkus-bom:${{ inputs.quarkus_version }}
-          else
-            quarkus create app com.example:project-gradle-kotlin-dsl:1.0.0-SNAPSHOT --gradle-kotlin-dsl
-          fi
+      # - name: Create Gradle Kotlin DSL project
+      #   run: |
+      #     if [ -n "${{ inputs.quarkus_version }}" ]; then
+      #       quarkus create app com.example:project-gradle-kotlin-dsl:1.0.0-SNAPSHOT --gradle-kotlin-dsl -P io.quarkus.platform:quarkus-bom:${{ inputs.quarkus_version }}
+      #     else
+      #       quarkus create app com.example:project-gradle-kotlin-dsl:1.0.0-SNAPSHOT --gradle-kotlin-dsl
+      #     fi
 
       - name: Configure Git
         run: |
@@ -87,4 +89,16 @@ jobs:
             git commit -m "$COMMIT_MSG"
             git push
             echo "Changes committed and pushed: $COMMIT_MSG"
+          fi
+
+      - name: Tag the commit
+        if: steps.quarkus_version.outputs.version != 'unknown'
+        run: |
+          TAG_NAME="quarkus-v${{ steps.quarkus_version.outputs.version }}"
+          if git rev-parse "$TAG_NAME" >/dev/null 2>&1; then
+            echo "Tag $TAG_NAME already exists, skipping"
+          else
+            git tag -a "$TAG_NAME" -m "Generated projects with Quarkus ${{ steps.quarkus_version.outputs.version }}"
+            git push origin "$TAG_NAME"
+            echo "Created and pushed tag: $TAG_NAME"
           fi
