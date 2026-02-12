@@ -66,6 +66,17 @@ jobs:
               ;;
           esac
 
+      - name: Checkout build tool branch
+        run: |
+          git fetch origin ${{ matrix.build_tool }}
+          git checkout ${{ matrix.build_tool }}    
+
+      - name: Clean
+        run: |
+          # Remove all files except .git
+          find . -mindepth 1 -maxdepth 1 ! -name '.git' -exec rm -rf {} +
+      
+
       - name: Generate project
         run: |
           if [ -n "${{ inputs.quarkus_version }}" ]; then
@@ -74,16 +85,8 @@ jobs:
             quarkus create app com.example:project:1.0.0-SNAPSHOT ${{ steps.build_tool_flag.outputs.flag }}
           fi
 
-      - name: Checkout build tool branch
+      - name: Move project files
         run: |
-          git fetch origin ${{ matrix.build_tool }}
-          git checkout ${{ matrix.build_tool }}
-
-      - name: Clean and copy project files
-        run: |
-          # Remove all files except .git
-          find . -mindepth 1 -maxdepth 1 ! -name '.git' -exec rm -rf {} +
-
           # Move generated project contents to root
           mv project/* project/.??* . 2>/dev/null || true
           rmdir project
