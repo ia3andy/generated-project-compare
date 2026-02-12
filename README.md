@@ -1,4 +1,4 @@
-# Quarkus Generated Project Comparison
+# Code With Quarkus Projects Comparison
 
 This repository helps you compare Quarkus project generator (code.quarkus.io) across different versions and build tools.
 
