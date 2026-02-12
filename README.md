@@ -1,6 +1,6 @@
 # Quarkus Generated Project Comparison
 
-This repository helps you compare Quarkus project scaffolding across different versions and build tools.
+This repository helps you compare Quarkus project generator (code.quarkus.io) across different versions and build tools.
 
 ## 🏗️ Repository Structure
 
@@ -51,41 +51,23 @@ You can also compare the same version across different build tools:
 https://github.com/ia3andy/generated-project-compare/compare/maven-3.31.2...gradle-3.31.2
 ```
 
-## 🚀 Generating New Projects
-
-To generate new project snapshots:
-
-1. Go to [Actions](https://github.com/ia3andy/generated-project-compare/actions/workflows/generate-quarkus-projects.yml)
-2. Click **"Run workflow"**
-3. Optionally specify a Quarkus version (leave empty for latest)
-4. The workflow will generate projects for all three build tools in parallel
-
-The workflow will:
-- Generate fresh projects using the Quarkus CLI
-- Commit them to their respective branches
-- Tag each commit with `buildtool/version` format
-
 ## 📋 Available Tags
 
 View all available tags: [Tags](https://github.com/ia3andy/generated-project-compare/tags)
-
-## 💡 Use Cases
-
-- **Track Quarkus Changes**: See what changes between Quarkus versions in generated projects
-- **Migration Planning**: Understand what needs updating when upgrading Quarkus
-- **Build Tool Comparison**: Compare how different build tools structure the same project
-- **Regression Detection**: Spot unexpected changes in project generation
 
 ## 🛠️ How It Works
 
 1. The **workflow** branch contains a GitHub Actions workflow
 2. When triggered, it runs in parallel for all build tools (Maven, Gradle, Gradle Kotlin DSL)
 3. For each build tool:
-   - Generates a new Quarkus project using the CLI
+   - Generates a new Quarkus project using the given Quarkus version (and a Quarkus CLI in the same version)
    - Checks out the corresponding branch
    - Replaces all content with the newly generated project
    - Commits and pushes the changes
    - Tags the commit with `buildtool-version`
+
+> [!IMPORTANT]
+> When generating older Quarkus projects using the latest Quarkus CLI (or code.quarkus.io), the result may differ because some base templates are embedded in the CLI. For clarity and consistency, we chose to keep those templates aligned during generation so that differences are clearly visible.
 
 ## 📖 Example Workflows
 
