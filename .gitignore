@@ -1,18 +1,41 @@
-# IDE
-.idea/
-.vscode/
-*.iml
+# Gradle
+.gradle/
+build/
+
+# Eclipse
+.project
+.classpath
+.settings/
+bin/
+
+# IntelliJ
+.idea
 *.ipr
+*.iml
 *.iws
 
-# OS
+# NetBeans
+nb-configuration.xml
+
+# Visual Studio Code
+.vscode
+.factorypath
+
+# OSX
 .DS_Store
-Thumbs.db
 
-# Temporary files
-*.log
-*.tmp
-*.bak
+# Vim
+*.swp
+*.swo
 
-# Quarkus CLI
-.quarkus/
+# patch
+*.orig
+*.rej
+
+# Local environment
+.env
+
+# Plugin directory
+/.quarkus/cli/plugins/
+# TLS Certificates
+.certs/
