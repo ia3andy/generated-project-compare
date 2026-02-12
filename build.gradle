@@ -16,8 +16,8 @@ dependencies {
     testImplementation 'io.rest-assured:rest-assured'
 }
 
-group 'com.example'
-version '1.0.0-SNAPSHOT'
+group = 'com.example'
+version = '1.0.0-SNAPSHOT'
 
 java {
     sourceCompatibility = JavaVersion.VERSION_17
@@ -26,6 +26,7 @@ java {
 
 test {
     systemProperty "java.util.logging.manager", "org.jboss.logmanager.LogManager"
+    jvmArgs "--add-opens", "java.base/java.lang=ALL-UNNAMED"
 }
 compileJava {
     options.encoding = 'UTF-8'
