@@ -9,12 +9,18 @@ on:
         type: string
 
 jobs:
-  generate-projects:
+  generate-project:
     runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        build_tool: [maven, gradle, gradle-kotlin-dsl]
 
     steps:
-      - name: Checkout repository
+      - name: Checkout workflow branch
         uses: actions/checkout@v4
+        with:
+          ref: workflow
 
       - name: Set up Java
         uses: actions/setup-java@v4
@@ -45,34 +51,42 @@ jobs:
           echo "version=$VERSION" >> $GITHUB_OUTPUT
           echo "Detected Quarkus CLI version: $VERSION"
 
-      - name: Clean existing projects
+      - name: Set build tool flag
+        id: build_tool_flag
         run: |
-          rm -rf project-maven
-          # rm -rf project-gradle project-gradle-kotlin-dsl
+          case "${{ matrix.build_tool }}" in
+            maven)
+              echo "flag=--maven" >> $GITHUB_OUTPUT
+              ;;
+            gradle)
+              echo "flag=--gradle" >> $GITHUB_OUTPUT
+              ;;
+            gradle-kotlin-dsl)
+              echo "flag=--gradle-kotlin-dsl" >> $GITHUB_OUTPUT
+              ;;
+          esac
 
-      - name: Create Maven project
+      - name: Generate project
         run: |
           if [ -n "${{ inputs.quarkus_version }}" ]; then
-            quarkus create app com.example:project-maven:1.0.0-SNAPSHOT --maven -P io.quarkus.platform:quarkus-bom:${{ inputs.quarkus_version }}
+            quarkus create app com.example:project:1.0.0-SNAPSHOT ${{ steps.build_tool_flag.outputs.flag }} -P io.quarkus.platform:quarkus-bom:${{ inputs.quarkus_version }}
           else
-            quarkus create app com.example:project-maven:1.0.0-SNAPSHOT --maven
+            quarkus create app com.example:project:1.0.0-SNAPSHOT ${{ steps.build_tool_flag.outputs.flag }}
           fi
 
-      # - name: Create Gradle project
-      #   run: |
-      #     if [ -n "${{ inputs.quarkus_version }}" ]; then
-      #       quarkus create app com.example:project-gradle:1.0.0-SNAPSHOT --gradle -P io.quarkus.platform:quarkus-bom:${{ inputs.quarkus_version }}
-      #     else
-      #       quarkus create app com.example:project-gradle:1.0.0-SNAPSHOT --gradle
-      #     fi
+      - name: Checkout build tool branch
+        run: |
+          git fetch origin ${{ matrix.build_tool }}
+          git checkout ${{ matrix.build_tool }}
 
-      # - name: Create Gradle Kotlin DSL project
-      #   run: |
-      #     if [ -n "${{ inputs.quarkus_version }}" ]; then
-      #       quarkus create app com.example:project-gradle-kotlin-dsl:1.0.0-SNAPSHOT --gradle-kotlin-dsl -P io.quarkus.platform:quarkus-bom:${{ inputs.quarkus_version }}
-      #     else
-      #       quarkus create app com.example:project-gradle-kotlin-dsl:1.0.0-SNAPSHOT --gradle-kotlin-dsl
-      #     fi
+      - name: Clean and copy project files
+        run: |
+          # Remove all files except .git
+          find . -mindepth 1 -maxdepth 1 ! -name '.git' -exec rm -rf {} +
+
+          # Move generated project contents to root
+          mv project/* project/.??* . 2>/dev/null || true
+          rmdir project
 
       - name: Configure Git
         run: |
@@ -84,21 +98,25 @@ jobs:
           git add .
           if git diff --staged --quiet; then
             echo "No changes to commit"
-          else
-            COMMIT_MSG="Generate Quarkus projects with version ${{ steps.quarkus_version.outputs.version }}"
-            git commit -m "$COMMIT_MSG"
-            git push
-            echo "Changes committed and pushed: $COMMIT_MSG"
+            exit 0
           fi
+
+          COMMIT_MSG="Generate ${{ matrix.build_tool }} project with Quarkus ${{ steps.quarkus_version.outputs.version }}"
+          git commit -m "$COMMIT_MSG"
+          git push origin ${{ matrix.build_tool }}
+          echo "Changes committed and pushed: $COMMIT_MSG"
 
       - name: Tag the commit
         if: steps.quarkus_version.outputs.version != 'unknown'
         run: |
-          TAG_NAME="quarkus-v${{ steps.quarkus_version.outputs.version }}"
-          if git rev-parse "$TAG_NAME" >/dev/null 2>&1; then
-            echo "Tag $TAG_NAME already exists, skipping"
-          else
-            git tag -a "$TAG_NAME" -m "Generated projects with Quarkus ${{ steps.quarkus_version.outputs.version }}"
-            git push origin "$TAG_NAME"
-            echo "Created and pushed tag: $TAG_NAME"
+          TAG_NAME="${{ matrix.build_tool }}/${{ steps.quarkus_version.outputs.version }}"
+
+          # Check if tag exists on remote
+          if git ls-remote --tags origin | grep -q "refs/tags/$TAG_NAME"; then
+            echo "Tag $TAG_NAME already exists on remote, skipping"
+            exit 0
           fi
+
+          git tag -a "$TAG_NAME" -m "Generated ${{ matrix.build_tool }} project with Quarkus ${{ steps.quarkus_version.outputs.version }}"
+          git push origin "$TAG_NAME"
+          echo "Created and pushed tag: $TAG_NAME"
