@@ -29,27 +29,23 @@ You can compare any two versions using GitHub's compare view:
 
 ### Maven Projects
 Compare Maven project changes between Quarkus 3.15.7 and 3.31.2:
-```
-https://github.com/quarkusio/code-with-quarkus-compare/compare/maven-3.15.7...maven-3.31.2
-```
+
+[**🔗 Compare maven-3.15.7...maven-3.31.2**](https://github.com/quarkusio/code-with-quarkus-compare/compare/maven-3.15.7...maven-3.31.2)
 
 ### Gradle Projects
 Compare Gradle project changes between versions:
-```
-https://github.com/quarkusio/code-with-quarkus-compare/compare/gradle-3.15.7...gradle-3.31.2
-```
+
+[**🔗 Compare gradle-3.15.7...gradle-3.31.2**](https://github.com/quarkusio/code-with-quarkus-compare/compare/gradle-3.15.7...gradle-3.31.2)
 
 ### Gradle Kotlin DSL Projects
 Compare Gradle Kotlin DSL project changes:
-```
-https://github.com/quarkusio/code-with-quarkus-compare/compare/gradle-kotlin-dsl-3.15.7...gradle-kotlin-dsl-3.31.2
-```
+
+[**🔗 Compare gradle-kotlin-dsl-3.15.7...gradle-kotlin-dsl-3.31.2**](https://github.com/quarkusio/code-with-quarkus-compare/compare/gradle-kotlin-dsl-3.15.7...gradle-kotlin-dsl-3.31.2)
 
 ### Compare Across Build Tools
 You can also compare the same version across different build tools:
-```
-https://github.com/quarkusio/code-with-quarkus-compare/compare/maven-3.31.2...gradle-3.31.2
-```
+
+[**🔗 Compare maven-3.31.2...gradle-3.31.2**](https://github.com/quarkusio/code-with-quarkus-compare/compare/maven-3.31.2...gradle-3.31.2)
 
 ## 📋 Available Tags
 
@@ -68,14 +64,6 @@ View all available tags: [Tags](https://github.com/quarkusio/code-with-quarkus-c
 
 > [!IMPORTANT]
 > When generating older Quarkus projects using the latest Quarkus CLI (or code.quarkus.io), the result may differ because some base templates are embedded in the CLI. For clarity and consistency, we chose to keep those templates aligned during generation so that differences are clearly visible.
-
-## 📖 Example Workflows
-
-### See what changed in Maven projects from 3.15 to 3.31
-[Compare maven-3.15.7...maven-3.31.2](https://github.com/quarkusio/code-with-quarkus-compare/compare/maven-3.15.7...maven-3.31.2)
-
-### See differences between Maven and Gradle for version 3.31.2
-[Compare maven-3.31.2...gradle-3.31.2](https://github.com/quarkusio/code-with-quarkus-compare/compare/maven-3.31.2...gradle-3.31.2)
 
 ---
 
