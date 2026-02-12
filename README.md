@@ -15,13 +15,13 @@ Each branch contains the generated project files directly in the root directory 
 
 ## 🏷️ Tagging System
 
-Projects are tagged using the format: `buildtool/version`
+Projects are tagged using the format: `buildtool-version`
 
 Examples:
-- `maven/3.15.7`
-- `maven/3.31.2`
-- `gradle/3.31.2`
-- `gradle-kotlin-dsl/3.31.2`
+- `maven-3.15.7`
+- `maven-3.31.2`
+- `gradle-3.31.2`
+- `gradle-kotlin-dsl-3.31.2`
 
 ## 🔍 Comparing Versions
 
@@ -30,25 +30,25 @@ You can compare any two versions using GitHub's compare view:
 ### Maven Projects
 Compare Maven project changes between Quarkus 3.15.7 and 3.31.2:
 ```
-https://github.com/ia3andy/generated-project-compare/compare/maven/3.15.7...maven/3.31.2
+https://github.com/ia3andy/generated-project-compare/compare/maven-3.15.7...maven-3.31.2
 ```
 
 ### Gradle Projects
 Compare Gradle project changes between versions:
 ```
-https://github.com/ia3andy/generated-project-compare/compare/gradle/3.15.7...gradle/3.31.2
+https://github.com/ia3andy/generated-project-compare/compare/gradle-3.15.7...gradle-3.31.2
 ```
 
 ### Gradle Kotlin DSL Projects
 Compare Gradle Kotlin DSL project changes:
 ```
-https://github.com/ia3andy/generated-project-compare/compare/gradle-kotlin-dsl/3.15.7...gradle-kotlin-dsl/3.31.2
+https://github.com/ia3andy/generated-project-compare/compare/gradle-kotlin-dsl-3.15.7...gradle-kotlin-dsl-3.31.2
 ```
 
 ### Compare Across Build Tools
 You can also compare the same version across different build tools:
 ```
-https://github.com/ia3andy/generated-project-compare/compare/maven/3.31.2...gradle/3.31.2
+https://github.com/ia3andy/generated-project-compare/compare/maven-3.31.2...gradle-3.31.2
 ```
 
 ## 🚀 Generating New Projects
@@ -85,15 +85,15 @@ View all available tags: [Tags](https://github.com/ia3andy/generated-project-com
    - Checks out the corresponding branch
    - Replaces all content with the newly generated project
    - Commits and pushes the changes
-   - Tags the commit with `buildtool/version`
+   - Tags the commit with `buildtool-version`
 
 ## 📖 Example Workflows
 
 ### See what changed in Maven projects from 3.15 to 3.31
-[Compare maven/3.15.7...maven/3.31.2](https://github.com/ia3andy/generated-project-compare/compare/maven/3.15.7...maven/3.31.2)
+[Compare maven-3.15.7...maven-3.31.2](https://github.com/ia3andy/generated-project-compare/compare/maven-3.15.7...maven-3.31.2)
 
 ### See differences between Maven and Gradle for version 3.31.2
-[Compare maven/3.31.2...gradle/3.31.2](https://github.com/ia3andy/generated-project-compare/compare/maven/3.31.2...gradle/3.31.2)
+[Compare maven-3.31.2...gradle-3.31.2](https://github.com/ia3andy/generated-project-compare/compare/maven-3.31.2...gradle-3.31.2)
 
 ---
 

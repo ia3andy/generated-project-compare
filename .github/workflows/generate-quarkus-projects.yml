@@ -99,6 +99,7 @@ jobs:
       - name: Commit and push changes
         run: |
           git add .
+          
           if git diff --staged --quiet; then
             echo "No changes to commit"
             exit 0
@@ -112,7 +113,7 @@ jobs:
       - name: Tag the commit
         if: steps.quarkus_version.outputs.version != 'unknown'
         run: |
-          TAG_NAME="${{ matrix.build_tool }}/${{ steps.quarkus_version.outputs.version }}"
+          TAG_NAME="${{ matrix.build_tool }}-${{ steps.quarkus_version.outputs.version }}"
 
           # Check if tag exists on remote
           if git ls-remote --tags origin | grep -q "refs/tags/$TAG_NAME"; then
